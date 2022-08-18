@@ -201,7 +201,7 @@ function postLogin(data, sekolah) {
 
       var stringLoginData = QueryString.stringify(loginData)
 
-      store.dispatch(Actions.LOGIN, {...res.data.data, ...sekolah})
+      // store.dispatch(Actions.LOGIN, {...res.data.data, ...sekolah})
 
       if (loginData.user_level == 'administrator') {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${stringLoginData}`
