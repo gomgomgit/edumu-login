@@ -102,12 +102,36 @@
       <!--end::Actions-->
     </Form>
     <!--end::Form-->
+	  <CustomModal
+      title="Pilih Kode Sekolah"
+      :show="modalCode"
+      @closeModal="modalCode = false"
+      @confirm="handleSubmit"
+      @dismiss="modalCode = false">
+      <div>
+        <div>
+          <el-select
+            v-model="sekolahKode"
+            placeholder="Pilih Mapel"
+            style="width: 100%"
+            filterable
+          >
+            <el-option
+              v-for="sekolah in sekolahOption"
+              :key="sekolah.mapel_id"
+              :label="sekolah.mapel_nama"
+              :value="sekolah.mapel_id"
+            />
+          </el-select>
+        </div>
+      </div>
+    </CustomModal>
   </div>
   <!--end::Wrapper-->
 </template>
 
 <script setup>
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { ErrorMessage, Field, Form } from "vee-validate";
 import { Actions, Mutations } from "@/store/enums/StoreEnums";
 import { useStore } from "vuex";
@@ -117,6 +141,9 @@ import * as Yup from "yup";
 import axios from "axios";
 import QueryString from "qs";
 import { useToast } from "vue-toast-notification";
+import CustomModal from '@/components/modals/CustomModal.vue'
+import { request } from '@/util';
+import md5 from 'md5'
 
 const store = useStore();
 const router = useRouter();
@@ -129,6 +156,10 @@ const login = Yup.object().shape({
   username: Yup.string().required().label("Username"),
   password: Yup.string().min(4).required().label("Password"),
 });
+
+const modalCode = ref(false)
+const sekolahKode = ref()
+const sekolahOption = ref()
 
 //Form submit function
 const onSubmitLogin = async (values) => {
@@ -149,6 +180,13 @@ const onSubmitLogin = async (values) => {
     })
 };
 
+function getData () {
+  request.post('mapel', null)
+  .then(res => {
+    sekolahOption.value = res.data.data
+  })
+}
+
 function postLogin(data, sekolah) {
   const formData = {
     user_username: data.username,
@@ -159,10 +197,21 @@ function postLogin(data, sekolah) {
   axios.post('https://apiedumu.edumu.id/demo/apischool/login', QueryString.stringify(formData))
   .then(res => {
     if (res.data.success) {
+      var loginData = {...res.data.data, ...sekolah}
 
-      console.log(res.data)
+      var stringLoginData = QueryString.stringify(loginData)
 
-      // store.dispatch(Actions.LOGIN, {...res.data.data, ...sekolah})
+      store.dispatch(Actions.LOGIN, {...res.data.data, ...sekolah})
+
+      if (loginData.user_level == 'administrator') {
+        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${stringLoginData}`
+      }
+      if (loginData.user_level == 'guru') {
+        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${stringLoginData}`
+      }
+      if (loginData.user_level == 'siswa') {
+        window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process/${stringLoginData}`
+      }
 
       // Swal.fire({
       // text: "You have successfully logged in!",
@@ -184,4 +233,8 @@ function postLogin(data, sekolah) {
     useToast().error(err.message)
   })
 }
+
+onMounted(() => {
+  getData()
+})
 </script>
