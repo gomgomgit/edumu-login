@@ -101,31 +101,6 @@
       </div>
       <!--end::Actions-->
     </Form>
-    <!--end::Form-->
-	  <CustomModal
-      title="Pilih Kode Sekolah"
-      :show="modalCode"
-      @closeModal="modalCode = false"
-      @confirm="handleSubmit"
-      @dismiss="modalCode = false">
-      <div>
-        <div>
-          <el-select
-            v-model="sekolahKode"
-            placeholder="Pilih Mapel"
-            style="width: 100%"
-            filterable
-          >
-            <el-option
-              v-for="sekolah in sekolahOption"
-              :key="sekolah.mapel_id"
-              :label="sekolah.mapel_nama"
-              :value="sekolah.mapel_id"
-            />
-          </el-select>
-        </div>
-      </div>
-    </CustomModal>
   </div>
   <!--end::Wrapper-->
 </template>
@@ -144,11 +119,14 @@ import { useToast } from "vue-toast-notification";
 import CustomModal from '@/components/modals/CustomModal.vue'
 import { request } from '@/util';
 import md5 from 'md5'
+import { inject } from 'vue'
 
 const store = useStore();
 const router = useRouter();
 
 const submitButton = ref();
+
+const cryoptojs = inject('cryptojs')
 
 //Create form validation object
 const login = Yup.object().shape({
@@ -180,13 +158,6 @@ const onSubmitLogin = async (values) => {
     })
 };
 
-function getData () {
-  request.post('mapel', null)
-  .then(res => {
-    sekolahOption.value = res.data.data
-  })
-}
-
 function postLogin(data, sekolah) {
   const formData = {
     user_username: data.username,
@@ -200,18 +171,20 @@ function postLogin(data, sekolah) {
       var loginData = {...res.data.data, ...sekolah}
 
       var stringLoginData = QueryString.stringify(loginData)
+      var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
+      console.log(encryptedData)
 
-      // store.dispatch(Actions.LOGIN, {...res.data.data, ...sekolah})
+
 
       if (loginData.user_level == 'administrator') {
-        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${stringLoginData}`
+        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
       }
-      if (loginData.user_level == 'guru') {
-        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${stringLoginData}`
-      }
-      if (loginData.user_level == 'siswa') {
-        window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process/${stringLoginData}`
-      }
+      // if (loginData.user_level == 'guru') {
+      //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${encryptedData}`
+      // }
+      // if (loginData.user_level == 'siswa') {
+      //   window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process/${encryptedData}`
+      // }
 
       // Swal.fire({
       // text: "You have successfully logged in!",
@@ -233,8 +206,4 @@ function postLogin(data, sekolah) {
     useToast().error(err.message)
   })
 }
-
-onMounted(() => {
-  getData()
-})
 </script>
