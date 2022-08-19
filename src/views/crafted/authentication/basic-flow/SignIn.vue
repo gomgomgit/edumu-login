@@ -172,7 +172,8 @@ function postLogin(data, sekolah) {
 
       var stringLoginData = QueryString.stringify(loginData)
       var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
-      console.log(encryptedData)
+      // console.log(encryptedData)
+      // alert(encryptedData)
 
 
 
