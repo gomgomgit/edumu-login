@@ -198,11 +198,12 @@ function selectSekolah(sekolah) {
 }
 function postLogin(data, sekolah) {
   const formData = {
-    user_username: data.username,
-    user_kunci: data.password,
-    // user_kodesekolah: data.kode,
-    // user_namasekolah: sekolah.sekolah_nama,
+    user_username: form.username,
+    user_kunci: form.password,
+    user_kodesekolah: form.kode,
+    user_namasekolah: sekolah.sekolah_nama,
   }
+  console.log(QueryString.stringify(formData))
   axios.post(`https://apiedumu.edumu.id/${sekolah.sekolah_kode}/apischool/login`, QueryString.stringify(formData))
   .then(res => {
     if (res.data.success) {
@@ -217,9 +218,9 @@ function postLogin(data, sekolah) {
 
 
 
-      // if (loginData.user_level == 'administrator') {
-      //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
-      // }
+      if (loginData.user_level == 'administrator') {
+        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
+      }
       // if (loginData.user_level == 'guru') {
       //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${encryptedData}`
       // }
