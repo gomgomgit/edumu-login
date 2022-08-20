@@ -8,27 +8,34 @@
       @submit="onSubmitLogin"
       :validation-schema="login"
     >
-      <!-- <div class="text-center fw-bold mb-6 fs-1">
-        Masuk ke CMS EDUMU
-      </div> -->
 
-      <!--begin::Input group-->
       <div class="fv-row mb-6">
-        <!--begin::Label-->
-        <label class="form-label fs-6 fw-medium text-black-50">Kode Sekolah</label>
-        <!--end::Label-->
-
-        <!--begin::Input-->
-        <Field
-          class="form-control form-control-lg form-control-solid bg-white border-secondary border-2"
-          type="text"
-          name="kode"
-          autocomplete="off"
-        />
+        <label class="form-label fs-6 fw-medium text-black-50">Sekolah</label>
+        <div>
+          <el-select
+            v-model="form.kode"
+            filterable
+            remote
+            placeholder="Pilih nama sekolah"
+            :remote-method="getSekolah"
+            :loading="loading"
+            :no-data-text="nodatatext"
+            class="w-100"
+            name="kode"
+            @input="errors.kode = false"
+          >
+            <el-option
+              v-for="item in sekolahOption"
+              :key="item.sekolah_kode"
+              :label="`${item.sekolah_nama} (${item.sekolah_kode})`"
+              :value="item.sekolah_kode"
+            />
+          </el-select>
+        </div>
         <!--end::Input-->
-        <div class="fv-plugins-message-container">
+        <div class="fv-plugins-message-container" v-if="errors.kode">
           <div class="fv-help-block">
-            <ErrorMessage name="kode" />
+            Harap pilih sekolah
           </div>
         </div>
       </div>
@@ -41,16 +48,17 @@
         <!--end::Label-->
 
         <!--begin::Input-->
-        <Field
-          class="form-control form-control-lg form-control-solid bg-white border-secondary border-2"
-          type="text"
-          name="username"
-          autocomplete="off"
-        />
+        <input
+					v-model="form.username"
+					type="text"
+					placeholder="Username"
+					class="form-control" 
+          @input="errors.username = false"/>
+
         <!--end::Input-->
-        <div class="fv-plugins-message-container">
+        <div class="fv-plugins-message-container" v-if="errors.username">
           <div class="fv-help-block">
-            <ErrorMessage name="username" />
+            Harap isi Username
           </div>
         </div>
       </div>
@@ -63,16 +71,16 @@
         <!--end::Wrapper-->
 
         <!--begin::Input-->
-        <Field
-          class="form-control form-control-lg form-control-solid bg-white border-secondary border-2"
-          type="password"
-          name="password"
-          autocomplete="off"
-        />
+        <input
+					v-model="form.password"
+					type="password"
+					placeholder="Password"
+					class="form-control" 
+          @input="errors.password = false"/>
         <!--end::Input-->
-        <div class="fv-plugins-message-container">
+        <div class="fv-plugins-message-container" v-if="errors.password">
           <div class="fv-help-block">
-            <ErrorMessage name="password" />
+            Harap isi Password
           </div>
         </div>
       </div>
@@ -106,7 +114,7 @@
 </template>
 
 <script setup>
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import { ErrorMessage, Field, Form } from "vee-validate";
 import { Actions, Mutations } from "@/store/enums/StoreEnums";
 import { useStore } from "vuex";
@@ -128,23 +136,33 @@ const submitButton = ref();
 
 const cryoptojs = inject('cryptojs')
 
-//Create form validation object
-const login = Yup.object().shape({
-  kode: Yup.string().required().label("Kode"),
-  username: Yup.string().required().label("Username"),
-  password: Yup.string().min(4).required().label("Password"),
-});
+const listSekolah = ref()
+
+const form = reactive({
+  kode: '',
+  username: '',
+  password: ''
+})
+const errors = reactive({
+  kode: false,
+  username: false,
+  password: false
+})
 
 const modalCode = ref(false)
 const sekolahKode = ref()
-const sekolahOption = ref()
+const sekolahOption = ref([])
+const nodatatext = ref('Sekolah tidak ada')
 
 //Form submit function
 const onSubmitLogin = async (values) => {
-  // Clear existing errors
-  store.dispatch(Actions.LOGOUT);
+  if (!form.kode) {errors.kode = true}
+  if (!form.username) {errors.username = true}
+  if (!form.password) {errors.password = true}
+  if(Object.values(errors).includes(true)){return false}
 
-  axios.post('https://apisekolah.edumu.id/v1prod/sekolah', QueryString.stringify({code: values.kode}))
+  store.dispatch(Actions.LOGOUT);
+  axios.post('https://apisekolah.edumu.id/v1prod/sekolah', QueryString.stringify({code: form.kode}))
     .then(res => {
       if (res.data.status) {
         postLogin(values, res.data.data.sekolahs[0])
@@ -158,28 +176,50 @@ const onSubmitLogin = async (values) => {
     })
 };
 
+function getSekolah(query) {
+  axios.post('https://apisekolah.edumu.id/v3prod/search', QueryString.stringify({keyword: query}))
+  .then(res => {
+    if (res.data.status) {
+      sekolahOption.value = res.data.data?.schools
+      nodatatext.value = 'Sekolah tidak ada'
+    } else {
+      sekolahOption.value = res.data.data?.schools
+      nodatatext.value = 'Kata kunci harus minimal 3 karakter'
+    }
+  })
+  .catch(err => {
+    console.log(err)
+    useToast().error(err.message)
+  })
+
+}
+function selectSekolah(sekolah) {
+  console.log(sekolah)
+}
 function postLogin(data, sekolah) {
   const formData = {
     user_username: data.username,
     user_kunci: data.password,
-    user_kodesekolah: data.kode,
-    user_namasekolah: sekolah.sekolah_nama,
+    // user_kodesekolah: data.kode,
+    // user_namasekolah: sekolah.sekolah_nama,
   }
-  axios.post('https://apiedumu.edumu.id/demo/apischool/login', QueryString.stringify(formData))
+  axios.post(`https://apiedumu.edumu.id/${sekolah.sekolah_kode}/apischool/login`, QueryString.stringify(formData))
   .then(res => {
     if (res.data.success) {
       var loginData = {...res.data.data, ...sekolah}
 
       var stringLoginData = QueryString.stringify(loginData)
       var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
+
+      console.log(loginData)
       // console.log(encryptedData)
       // alert(encryptedData)
 
 
 
-      if (loginData.user_level == 'administrator') {
-        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
-      }
+      // if (loginData.user_level == 'administrator') {
+      //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
+      // }
       // if (loginData.user_level == 'guru') {
       //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${encryptedData}`
       // }
@@ -208,3 +248,19 @@ function postLogin(data, sekolah) {
   })
 }
 </script>
+
+<style scoped>
+  #list-sekolah-wrapper{
+    background: white;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;
+    box-sizing: border-box;
+  }
+  .sekolah-option:hover {
+    background: #eee;
+    cursor: pointer;
+  }
+</style>
