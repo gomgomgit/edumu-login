@@ -218,8 +218,6 @@ function postLogin(data, sekolah) {
       // console.log(encryptedData)
       // alert(encryptedData)
 
-
-
       if (loginData.user_level == 'administrator') {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
       }
