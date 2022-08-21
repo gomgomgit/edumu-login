@@ -197,12 +197,6 @@ function selectSekolah(sekolah) {
   console.log(sekolah)
 }
 function postLogin(data, sekolah) {
-  // const form = {
-  //   user_username: form.username,
-  //   user_kunci: form.password,
-    // user_kodesekolah: form.kode,
-    // user_namasekolah: sekolah.sekolah_nama,
-  // }
   const formData = new FormData()
   formData.append('user_username', form.username)
   formData.append('user_kunci', form.password)
@@ -233,8 +227,7 @@ function postLogin(data, sekolah) {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
       }
       if (loginData.user_level == 'siswa') {
-        window.location.href = `http://localhost:8081/#/sign-in-process?data=${encryptedData}`
-        // window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
+        window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
       }
 
       // Swal.fire({
