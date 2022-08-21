@@ -218,11 +218,12 @@ function postLogin(data, sekolah) {
       var stringLoginData = QueryString.stringify(loginData)
       var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
 
+
       if (loginData.user_level == 'administrator') {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
       }
       if (loginData.user_level == 'guru') {
-        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
+        window.location.href = `${process.env.VUE_APP_CMS_GURU_URL}/#/sign-in-process?data=${encryptedData}`
       }
       if (loginData.user_level == 'siswa') {
         window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
