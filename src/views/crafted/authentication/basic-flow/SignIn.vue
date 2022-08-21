@@ -197,14 +197,22 @@ function selectSekolah(sekolah) {
   console.log(sekolah)
 }
 function postLogin(data, sekolah) {
-  const formData = {
-    user_username: form.username,
-    user_kunci: form.password,
-    user_kodesekolah: form.kode,
-    user_namasekolah: sekolah.sekolah_nama,
-  }
-  console.log(QueryString.stringify(formData))
-  axios.post(`https://apiedumu.edumu.id/${sekolah.sekolah_kode}/apischool/login`, QueryString.stringify(formData))
+  // const form = {
+  //   user_username: form.username,
+  //   user_kunci: form.password,
+    // user_kodesekolah: form.kode,
+    // user_namasekolah: sekolah.sekolah_nama,
+  // }
+  const formData = new FormData()
+  formData.append('user_username', form.username)
+  formData.append('user_kunci', form.password)
+  
+
+  const loginUrl = sekolah.sekolah_kode == process.env.VUE_APP_REVAMP_SCHOOL
+    ? `${process.env.VUE_APP_REVAMP_API_URL}/login`
+    : `${process.env.VUE_APP_API_URL}/${sekolah.sekolah_kode}/apischool/login`
+
+  axios.post(loginUrl, formData)
   .then(res => {
     if (res.data.success) {
       var loginData = {...res.data.data, ...sekolah}
@@ -212,7 +220,7 @@ function postLogin(data, sekolah) {
       var stringLoginData = QueryString.stringify(loginData)
       var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
 
-      console.log(loginData)
+      // console.log(loginData)
       // console.log(encryptedData)
       // alert(encryptedData)
 
@@ -221,12 +229,13 @@ function postLogin(data, sekolah) {
       if (loginData.user_level == 'administrator') {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
       }
-      // if (loginData.user_level == 'guru') {
-      //   window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process/${encryptedData}`
-      // }
-      // if (loginData.user_level == 'siswa') {
-      //   window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process/${encryptedData}`
-      // }
+      if (loginData.user_level == 'guru') {
+        window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
+      }
+      if (loginData.user_level == 'siswa') {
+        window.location.href = `http://localhost:8081/#/sign-in-process?data=${encryptedData}`
+        // window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
+      }
 
       // Swal.fire({
       // text: "You have successfully logged in!",
