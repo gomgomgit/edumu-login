@@ -10,7 +10,7 @@
     >
 
       <div class="fv-row mb-6">
-        <label class="form-label fs-6 fw-medium text-black-50">Sekolah</label>
+        <label class="form-label fs-6 fw-medium text-black-50">Nama Sekolah</label>
         <div>
           <el-select
             v-model="form.kode"
@@ -48,11 +48,10 @@
         <!--end::Label-->
 
         <!--begin::Input-->
-        <input
+        <el-input
 					v-model="form.username"
 					type="text"
 					placeholder="Username"
-					class="form-control" 
           @input="errors.username = false"/>
 
         <!--end::Input-->
@@ -71,17 +70,22 @@
         <!--end::Wrapper-->
 
         <!--begin::Input-->
-        <input
+        <el-input
 					v-model="form.password"
 					type="password"
 					placeholder="Password"
-					class="form-control" 
+          show-password
           @input="errors.password = false"/>
         <!--end::Input-->
         <div class="fv-plugins-message-container" v-if="errors.password">
           <div class="fv-help-block">
             Harap isi Password
           </div>
+        </div>
+        <div class="text-end mt-2">
+          <span class="text-primary fw-bold cursor-pointer">
+            Lupa Password?
+          </span>
         </div>
       </div>
       <!--end::Input group-->
@@ -184,7 +188,7 @@ function getSekolah(query) {
       nodatatext.value = 'Sekolah tidak ada'
     } else {
       sekolahOption.value = res.data.data?.schools
-      nodatatext.value = 'Kata kunci harus minimal 3 karakter'
+      nodatatext.value = 'Masukkan kata kunci minimal 3 karakter'
     }
   })
   .catch(err => {
@@ -213,10 +217,6 @@ function postLogin(data, sekolah) {
 
       var stringLoginData = QueryString.stringify(loginData)
       var encryptedData = cryoptojs.AES.encrypt(stringLoginData, "edumuv2").toString()
-
-      // console.log(loginData)
-      // console.log(encryptedData)
-      // alert(encryptedData)
 
       if (loginData.user_level == 'administrator') {
         window.location.href = `${process.env.VUE_APP_CMS_SEKOLAH_URL}/#/sign-in-process?data=${encryptedData}`
