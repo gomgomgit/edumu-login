@@ -4,7 +4,7 @@ import { ref } from "@vue/reactivity";
 
   function sendMessage() {
     messagePage.value = false
-    window.open('https://api.whatsapp.com/send?phone=15551234567')
+    window.open('https://api.whatsapp.com/send?phone=1')
   }
 </script>
 

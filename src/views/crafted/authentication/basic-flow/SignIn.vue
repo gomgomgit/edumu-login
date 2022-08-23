@@ -197,9 +197,7 @@ function getSekolah(query) {
   })
 
 }
-function selectSekolah(sekolah) {
-  console.log(sekolah)
-}
+
 function postLogin(data, sekolah) {
   const formData = new FormData()
   formData.append('user_username', form.username)
@@ -228,25 +226,13 @@ function postLogin(data, sekolah) {
       if (loginData.user_level == 'siswa') {
         window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
       }
-
-      // Swal.fire({
-      // text: "You have successfully logged in!",
-      // icon: "success",
-      // buttonsStyling: false,
-      // confirmButtonText: "Ok, got it!",
-      // customClass: {
-      //   confirmButton: "btn fw-bold btn-light-primary",
-      // },
-      // }).then(function () {
-      //   router.push({ name: "dashboard" });
-      // });
         
     } else {
-      useToast().error(res.data.message)
+      useToast().error('Kombinasi Username dan Password tidak sesuai!')
     }
   }).catch(err => {
     console.log(err)
-    useToast().error(err.message)
+    useToast().error(res.data.message)
   })
 }
 </script>
