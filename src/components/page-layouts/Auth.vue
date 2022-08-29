@@ -20,8 +20,33 @@
       
     </div>
 
-    <div id="starsCanvas" class="col-0 col-md-6 col-lg-7 bg-image position-fixed position-md-relative top-0 start-0 end-0 bottom-0 z-index-1">
-      <div class="onCanvas d-flex justify-content-center gap-10">
+    <div id="starsCanvas" class="col-0 col-md-6 col-lg-7 bg-image position-fixed position-md-relative top-0 start-0 end-0 bottom-0 z-index-1 overflow-hidden">
+      <div class="centerCanvas mw-75 d-none d-md-block" v-if="!isMobile()">
+        <Carousel :settings='carouselSettings' :autoplay="2000" :wrap-around="true">
+          <Slide v-for="item, indexitem in carouselItems" :key="indexitem">
+            <div class="carousel__item shadow-lg" style="max-width: 500px">
+              <div class="card p-0">
+                <div class="card-body p-0 m-0">
+                  <div class="rounded-3 image-wrapper" :style="`background-image: url(${item.image})`" >
+                  </div>
+                  <div class="px-6 pt-10 pb-5">
+                    <h2 class="text-start">{{item.title}}</h2>
+                    <p class="text-dark mt-5 text-start d-none d-lg-block">{{item.desc}}</p>
+                    <div class="d-flex justify-content-end mt-6">
+                      <a :href="item.link" class="rounded-pill btn btn-primary shadow fw-normal py-2">Read More</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Slide>
+
+          <template #addons>
+            <Pagination />
+          </template>
+        </Carousel>
+      </div>
+      <div class="bottomCanvas d-flex justify-content-center gap-10">
         <span class="fw-bold">Term of Use</span>
         <span class="fw-bold">Privacy Policy</span>
         <span class="fw-bold">Cookie Policy</span>
@@ -40,6 +65,8 @@ import { useStore } from "vuex";
 import { Actions } from "@/store/enums/StoreEnums";
 import { getIllustrationsPath } from "@/core/helpers/assets";
 import MessageFloating from "@/components/message-floating/Index.vue";
+import { Carousel, Pagination, Slide } from 'vue3-carousel';
+import 'vue3-carousel/dist/carousel.css';
 
 const store = useStore();
 
@@ -52,6 +79,30 @@ onMounted(() => {
 onUnmounted(() => {
   store.dispatch(Actions.REMOVE_BODY_CLASSNAME, "bg-body");
 });
+
+const carouselItems = [
+  {
+    image: 'https://muhammadiyah.or.id/wp-content/uploads/2021/11/WhatsApp-Image-2021-11-10-at-11.29.08-1140x570.jpeg',
+    title: 'Muhammadiyah Luncurkan RPJP Pendidikan Dasar dan Menengah 2021-2045',
+    desc: 'MUHAMMADIYAH.OR.ID, Yogyakarta – Muhammadiyah melalui Majelis Pendidikan Dasar dan Menengah PP Muhammadiyah telah resmi meluncurkan Rencana Pembangunan Jangka Panjang Pendidikan Dasar dan Menengah Muhammadiyah Tahun 2021 hingga Tahun 2045.',
+    link: 'https://muhammadiyah.or.id/muhammadiyah-luncurkan-rpjp-pendidikan-dasar-dan-menengah-2021-2045/'
+  },
+  {
+    image: 'https://menara62.com/wp-content/uploads/2022/08/WhatsApp-Image-2022-08-10-at-7.23.38-PM-768x593.jpeg',
+    title: 'EduMu Gandeng LinkAja Syariah Perkuat Digitalisasi Sekolah Muhamadiyah',
+    desc: 'Untuk mendukung penguatan ekosistem digital sekolah-sekolah Muhammadiyah, tim pengembang EduMu melakukan ikrar kerjasama dengan LinkAja Syariah.“Kolaborasi dengan LinkAja Syariah merupakan terobosan bagi digitalisasi pendidikan dasar dan menengah Muhammadiyah,” ...',
+    link: 'https://menara62.com/edumu-gandeng-linkaja-syariah-perkuat-digitalisasi-sekolah-muhamadiyah/'
+  },
+  {
+    image: 'https://menara62.com/wp-content/uploads/2022/02/depok-2-696x522.jpeg',
+    title: 'Majelis Dikdasmen PDM Kota Depok Akselerasi Pemberdayaan Kepala Sekolah Muhammadiyah',
+    desc: 'Majelis Pendidikan Dasar dan Menengah (Dikdasmen) Pimpinan Daerah Muhammadiyah (PDM) Kota Depok menggelar sosialisasi Rencana Pembangunan Jangka Panjang (RPJP) dan Pangkalan Data Dikdasmen Muhammadiyah dengan menghadirkan kepala-kepala sekolah ...',
+    link: 'https://menara62.com/majelis-dikdasmen-pdm-kota-depok-akselerasi-pemberdayaan-kepala-sekolah-muhammadiyah/'
+  },
+]
+const carouselSettings = {
+
+}
 
 function isMobile() {
   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -644,11 +695,25 @@ if (canvas) init();
   height: 100vh;
   z-index: 1;
 }
-.onCanvas {
+.bottomCanvas {
   position: absolute;
   padding: 0 30px;
   bottom: 30px; left: 0; right: 0;
   z-index: 10;
   color: #dedede;
+}
+.centerCanvas {
+  position: absolute;
+  padding: 0 30px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  color: #dedede;
+}
+.image-wrapper {
+  height: 300px;
+  max-height: 35vh;
+  background-position: center;
+  background-size: cover;
 }
 </style>
