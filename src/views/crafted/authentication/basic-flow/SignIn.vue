@@ -205,7 +205,7 @@ function postLogin(data, sekolah) {
   
 
   const loginUrl = sekolah.sekolah_kode == process.env.VUE_APP_REVAMP_SCHOOL
-    ? `${process.env.VUE_APP_REVAMP_API_URL}/login`
+    ? `${process.env.VUE_APP_REVAMP_API_URL}/singleLogin`
     : `${process.env.VUE_APP_API_URL}/${sekolah.sekolah_kode}/apischool/login`
 
   axios.post(loginUrl, formData)
