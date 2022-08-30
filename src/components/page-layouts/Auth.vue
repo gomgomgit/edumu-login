@@ -22,9 +22,9 @@
 
     <div id="starsCanvas" class="col-0 col-md-6 col-lg-7 bg-image position-fixed position-md-relative top-0 start-0 end-0 bottom-0 z-index-1 overflow-hidden">
       <div class="centerCanvas mw-75 d-none d-md-block" v-if="!isMobile()">
-        <Carousel :settings='carouselSettings' :autoplay="2000" :wrap-around="true">
+        <Carousel :settings='carouselSettings' :autoplay="7500" :wrap-around="true">
           <Slide v-for="item, indexitem in carouselItems" :key="indexitem">
-            <div class="carousel__item shadow-lg" style="max-width: 500px">
+            <div class="carousel__item" style="max-width: 500px">
               <div class="card p-0">
                 <div class="card-body p-0 m-0">
                   <div class="rounded-3 image-wrapper" :style="`background-image: url(${item.image})`" >
