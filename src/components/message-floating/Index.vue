@@ -5,7 +5,7 @@ import { ref } from "@vue/reactivity";
   const messageText = ref('')
 
   function sendMessage() {
-    window.open(`https://api.whatsapp.com/send?phone=089629935210text=${messageText.value}`)
+    window.open(`https://api.whatsapp.com/send?phone=089629935210&text=${messageText.value}`)
     messagePage.value = false
     messageText.value = ''
   }
@@ -22,7 +22,7 @@ import { ref } from "@vue/reactivity";
     <div class="message-layout rounded-3" v-if="messagePage">
       <div class="message-page">
         <div class="opening-message">
-          Hello, how we can help you?
+           Hi! Ada yang bisa saya bantu?
         </div>
         <div class="close-message" @click="messagePage = false">
           <i class="bi bi-x-circle-fill text-danger fs-1"></i>
