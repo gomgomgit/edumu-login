@@ -2,9 +2,12 @@
 import { ref } from "@vue/reactivity";
   const messagePage = ref(false)
 
+  const messageText = ref('')
+
   function sendMessage() {
+    window.open(`https://api.whatsapp.com/send?phone=089629935210text=${messageText.value}`)
     messagePage.value = false
-    window.open('https://api.whatsapp.com/send?phone=1')
+    messageText.value = ''
   }
 </script>
 
@@ -26,7 +29,7 @@ import { ref } from "@vue/reactivity";
         </div>
       </div>
       <div class="message-input d-flex align-items-center gap-4">
-        <input type="email" class="form-control rounded-pill border-none p-4">
+        <input type="text" v-model="messageText" class="form-control rounded-pill border-none p-4">
         <div>
           <div class="send-button" @click="sendMessage()">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#ffffff" d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path></svg>
