@@ -3,9 +3,17 @@ import { ref } from "@vue/reactivity";
   const messagePage = ref(false)
 
   const messageText = ref('')
+  
+  function isMobile() {
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      return true
+    } else {
+      return false
+    }
+  }
 
   function sendMessage() {
-    window.open(`https://api.whatsapp.com/send?phone=089629935210&text=${messageText.value}`)
+    window.open(`https://${isMobile() ? 'api' : 'web'}.whatsapp.com/send?phone=6289629935210&text=${messageText.value}`)
     messagePage.value = false
     messageText.value = ''
   }
