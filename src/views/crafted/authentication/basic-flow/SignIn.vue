@@ -223,7 +223,7 @@ function postLogin(data, sekolah) {
       if (loginData.user_level == 'guru') {
         window.location.href = `${process.env.VUE_APP_CMS_GURU_URL}/#/sign-in-process?data=${encryptedData}`
       }
-      if (loginData.user_level == 'siswa') {
+      if (loginData.user_level == 'siswa' || loginData.user_level == 'wali') {
         window.location.href = `${process.env.VUE_APP_CMS_SISWAWALI_URL}/#/sign-in-process?data=${encryptedData}`
       }
         
